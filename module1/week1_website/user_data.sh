@@ -1,0 +1,103 @@
+#!/bin/bash
+set -Eeuo pipefail
+
+exec > >(tee -a /var/log/class8-website-setup.log) 2>&1
+trap 'echo "Website setup failed at line $LINENO" >&2' ERR
+
+echo "Starting Class 8 website deployment"
+
+# Retry installation if package repositories are temporarily busy.
+for attempt in 1 2 3 4 5; do
+    if dnf install -y httpd; then
+        break
+    fi
+
+    if [ "$attempt" -eq 5 ]; then
+        echo "Apache installation failed"
+        exit 1
+    fi
+
+    sleep 20
+done
+
+mkdir -p /var/www/html
+
+# Extract the final website files.
+base64 -d <<'SITE_ARCHIVE' | tar -xz -C /var/www/html
+H4sIAMuF1WoA/+1bT3Mjt7HXmZ+iF+t1kbv8M8O/EkXSkeVNbRLH3nq7ea7UllMBZ5ocRENgDGAk
+MVoecsvhnXLJ+w7v9E65P38Tf5JXAGaGMyS19m5kOxUJB4nENBrdPzQa3YNmu9Pu/OIlvX6BNER5
+9KM0z7Xb/nter7/9bPp9r+t3j+D66CdoqdJUHnne0f1s3WNYabbCqT866fZGI8/rt49HA+/YO679
+3LI9tB+/MR7idTvSq/jHm8Ns6uFweNv+7/ZH3pE/6A4HPc/rDgZm/3t+7wh+kj15z/f/5NFnX56/
+/v3L52BsYFabmH8QU76cEuTEdCANZzWAyQo1hSCiUqGekt+9/mXrmGwfcLrCKblkeJUIqQkEgmvk
+ekquWKijaYiXLMCW/dIExplmNG6pgMY49dueY6SZjnH2QqwQ3sJ5LNIQPqcpD6KEhpOOe2roYsYv
+QGI8JUqvY1QRoiYQSVxMScd2tQOljPAdJ/1kLsJ1pgtKy4PTS/MfYKISyiGIqVJTEoulILPv/vsv
++9MbsmxEyC6LAYxfmJlMP8CE5lIQq8akQ/cf0blItd1yZHZmPh+kCmgcpDHVQmak50VHQT/phMxq
+MelYdZy6RsHJijIr7URhoJkoFIxQikzcSeTPvsI4MHBrAb9dw9lXrzK9X0rxJwz0pBP5GXEyOwOJ
+NAYdScRWQpcIVzhXTCOEmMRijSEIDpTD2Yr+WXB4ft61Qy+Z1CmNQaG8RAlUQUKlBrGA1RrOjVhw
+DF8hXoAPVCm25Cvkuj3pJNnUNBd+nmotODkE5PPrJBYSQUe4Fd7CNOlkEByCI6AyLODozj5NWayB
+ccvGIjHpRN0CgdcRU2A1ThWqXM/PGU+voet1e0077iyhQWTByVRu2vEvXv/28yacv3rVBMpD+DW9
+pK8CyRLdhjMLFvxOoYTPqKag7ANgXGkax8qON4MCwRdsmUpUdqYcf5pqsaKaBTSO13AVoVPADucB
+wlwIrXJA3weP13INr8QKdcT4En7FNUoaaHaJFVj+kymmzWJubdZKm6BcCLmCOVUsACqZjlaoWQAh
+kxjoeG0ZMA5rkUqYS3GlUP6Add/bGl8myGFvf5QUnXTcfpgshNAoZ7nVvc3t7m3J9p/zJeOIkvHl
+pJMNqE06mQvpOD959G/S2g/x/70+//fj/0F7NByOvOP+v42NP7Tb2/YM/fni/1F/VIr/hzb+7w4f
+4v97Gv/bmPghAbirBCDyM0Rt9LoT2OdB7TaSXwmutKQaFUTiCgKLAuMLSZWWaaBTiRBQXgOIhNJA
+YZFyG2WZCNHEvDRJYhZQ01WEnCW8diLMba5QCSnz7pgqEzCei1WS6iwkh0SKSxZmMXA1u7DjdUQ1
+yJQbgpJuWVhvAr0vIyZA4rIsYwHlO4R1kb2Jbcux/yHJt0kBMCdolv6IBCXVBiy1VhpXbTsw4xxR
+HsaogPFArAzNi9evX4LEb1JUWtmJLZtK+P8+GtyahFR0MFRVlEtJX2EGlo/d51JkOYohTSQq5Noa
+wO4skIgrlI5lyb7fZwmyVEdwuGI62uZM1UWAT6mKwLh2nSa76VSGdhMCidbQS2BaDgsWo3KyWxYF
+RZHDlhOuffF/cOJi8iubala39k+YrjzE//f7/N+P/4ftwaDvDbzRQ/x/D9qOS/oZ4n9/OPQGpfh/
+dOT5vtfvP8T/9zT+3x6Gd5QEmBDffHXhQbv0lvImi7pX9NqJNobeiZdcnxb9csn4GHpecm0P/fxB
+QsOQ8eUYut0t9ZwGF0spUh6O4bE/6PZ78+KRkCHKMfjJNSgRsxAe9/r94bBXJWhJGrJUldlunNAq
+kIi8ELgylXfs97r+LZz8koCF1P5wV8fWXGgtVmPwj7ePNF7rFo3Zko9BsmWk8wfiEuUiFldjiFgY
+Ii+L+jhiSgu5LmQNRCzkGB6fBBSDUTEt460IDdMxdAfbOReC65Zif8YxeO0TiasK75CpJKZ7vK8i
+pvEAhyCmq6Telbhqwujyqgk9iatGhfAqk2Eu4vCQbMOSbLnarStJkzFQvr6KUBYTx4xjMc5v9yoL
+mNCwkDrTYgxLyYpJzeeWxlUSU42tQMTpiqsxSEyQ6nq/Cf5CFqIvzfx+YambrWW3LnALT2bTvuc9
+yUce0is3c2/PUIqeisF1T3rBoFjJ71kDv90fFMu43QlccPwBJhukUhnuiWDm9uGguuPILAzcVIXs
++4P5iJ7uES9EkKrWJVNsHmOBlEi1Wb4x9LY7dGHbaZWiJRYLhcZobwG/nWoWM71dhKpUx0NvND88
+0KWGJbdUBd0f4kn/8Ej8JqWxOjxueBIeb7XIN6M38gfdwbu4HUaV9vFksShQjRjXcFNxFAHahTqw
+ke2giXPNe69m7tG7merLGadLmUHxauYMtNkTJtulcfl2bW7vKW0CXEquTb5qXsq4i1iTIT4/77rs
+9OBVX86OmLs52orp3BympVu+0pRkH113JBGQIkZzBlOdqpwVu8QpSUTMNG7xN2NZOCXZAUFm/4E0
+XBc4VWgyF0lmXul59nFPkoTmrwgAJi7nBr1OcJuAl3S2DjLbowRCqmnLaCv4lAQxUklm55OOG3cX
+PM3uUQkNkMy++6//uUvOCUqz18jsyYdxzd1NxlYkdmd8+48tt/dhl3EJ2ZLpKRmR2eiDpKqyOSaz
+4ztgc0JmJ3eG0VMy+/bvd4FRn8z6d6DcgMwGd8BmSGbDO8OoRWbf/fVvdwGST2b+HWjXJbPuHbDp
+kVnvzkB6RmbPPgyiWxyCKZ0hs//73ztQ1LOO98PZ5CKFGLAVjcms/WGwuVBkh2nWOZtWeZYO3KLw
+w56jRe0TM97y9yI1FximhMe+e3UsFAjp6lAucD0XVIbu4Mxfxf4T72JrE/f+eVYjZk6lJQs0Oa3V
+YtQmvpXINUyBeOTUdpnDEUOYAk/j2HVllwaCV3oXElUEU1jQWOFprRaYq5s8uYAphCJIbSnVEvXz
+GM3HT9e/CuvF4do4zcbkKds7xuSHduO0VsuvfCBNQqqx3rCRZ8a1bYLBc5f9wzRX0ESaGYsdglzd
+qVPNLuUnQGxsQOy3cU7zDAgQeAb1G/KMjMkz0iQtMibf/fVvpEmekjH59u+kSTrmwz/I5k2B2teN
+09qmJLY958/iOBN8Zw1gdwXgAP6wiz4UYFTnshuqzt1MbAH1YrbpFMhzKYUkjZJEpxmZZe9GlSXM
+Uu29yTeAscLyBG2JSUwDrHfe/MFrnXzdWTaBkEY7Rr7UEUzAH+yzrwjnEfgEOIyL3mdu+s3tyrrt
+Xr8rbYnXJt+v8KNcY8aDOA1R1UmbNHa5PZsCcdxul9+Uq1GtMazzdDVH6XhI1Knk8IXtajP1S/P6
+CnOSzGBfabPr644oe9bW4qXEgCkmeN3vNhqOeJwjUZ3cubUSdjs7A96+LRtiqTdDz8l5apye29Zz
+mGZS5+tgATe+g3J1ZdJpY+1XTAcR1AveBXJUIZidllFvN+szmJ/CXCK9OC1Rtg5Qtg5SPj1A+fQg
+ZadMObdae/AJfEG/2LqFTmXkZqu/Wq/mIoYpWH9hVGk6KZ3LcHJYp+Em2nUbpwWnPBFyLuCPH924
+qTfw0Y2bxHyab2D6Rwd/YcFbi3JaNN7bv2iZ7riX2zxpSciqZSmMMdBf5pPURfI9GzS3pIodPsot
+7uOP4VFlw+aW6xbuB3DdlEE4YKFlPETybjTKiroIoW7eRTvZctve9uSG5XK9cf5apOKR7DuUXUvc
+JnL5IOt7nGAff1ys+aOyyvkbmQM+tnDEUxNEvN3tNsh1S3zfeF87NFvuUHTtE+ulCw/dVjELsO41
+oeUXmlRNx7TNbTrm4VquYeHPb0XFxpxlQA7AYLTYWWT72Hs3Pu7q/SumozppkUZF66q+fsP41JYJ
+DUrhxnvqnqfT36PMYZm323xX0Y55+/oha5FFubk41T1Wot+YHVCEbd+kKNev7H4Xsk7Ma2fSaNMw
+fH6JXH/OlEaOsk6CmAUXpFlU79TRPM/iIXd4uPh8CvZJW1O5RN0OYqFQ6XoesRcn+CPXUTmFTL/r
+bpsAXqFu23DI4pnyEBeMY5gj6iKlQ/SNnQN/hyZ3Z7Dn6PYJS5zckMxl7FC6Xkdd25iYt0B4H8sL
+XIfiit+CphHYQRhoGf8G12azuw4a68p3c5H2G1wfOMlNLpSvxAWu81Pc1QuFhV/Mpuv84Y2J+D7q
+tLVZqwtcNxoZvOazGV1g+SY/Fe1xaA/Cr7eBlBu6C+seEyue2SNt0qg6jX2S5+b9IjFKF11T0qjY
+94FBKqAJ7oWO+4SfFl66kS9tyXPfMuhJiTh3A1vSLch5ouVQzvob2bIk0v7/DBc0jbU9mYzdbPf7
+pJPngf9CPyZ4qP+53/f/+/U/o3bv2POHD7//vRetqJM4+hnr/0f9av2PNxp5/kP9z0/RxlIIbeMU
+e1+7oCsWr8dwJhmNm/AC40vziz3aBEW5aimUzF4l59fISBe+u1yuVqTM/W7XM7nZU3OBLK7NRbAt
+KMiu+ufi2lwHm2MQbkr1B7s1FEND5e5NrZDVEhvfx569ES+4ZjUspSobr98b2iqGbcmOKeYZPTHS
+cXpZfnU5hkWM9lbf3mW3mMaVKm60awB/SpVmi3UrK24agw0rWnPUV+iqYAyDrDzE/DVdrlbDllts
+am1ziQ031QIJU5VyeqAcpYA5u8MHM97cacPNjshuEqOZIaJwszfUXtGHGAgXw2UFGIa4uOjfIzEh
+ujQrYujMe3C4yUtKVozXTzwvuW7C8fGTxmmxhqauxJVKGWnNz43hZot9r5tcm2Xe1CK/ikK5VGdg
+S3XapmyksWcSXTu6e0DFTS0p9QbdALFnpTA15AfMp6jQemd11m5xSlY3szWnrJYqB8CUbpm6mU2t
+7ZKKZp5K7UmwLc3YL8vIZfIOyJCVaG3LucyUdvFrt1Q1FdbCuIVzHovAZo979TWF2M4scuFzI9lV
+IasHqcEtBlbb1GxdQdli3eQFYH7fAAYGV9jUGE9S3cxSjurmLITeKWuq4HDLeh4H1J8HB7AclVDL
+9qOtVtrU8lXLK+S0KG2xxxJVGjsBK88zEfb3921Lky/98QgXc2omdhdHlnXFyqzTKhSw0x30dEXB
+3ZxicFKsTbU+p7Z5iO8e2kN7aA/toT20o/vZ/h+PAQy1AFAAAA==
+SITE_ARCHIVE
+
+chmod -R a+rX /var/www/html
+
+systemctl enable --now httpd
+
+curl -fsS --retry 5 --retry-delay 2 http://127.0.0.1/ > /dev/null
+
+echo "Class 8 website deployment completed successfully"

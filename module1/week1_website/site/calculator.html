@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator | Cloud Launchpad</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .calculator {
+      max-width: 390px;
+      margin: 30px auto;
+      padding: 22px;
+      background: #15243b;
+      border: 1px solid #344663;
+      border-radius: 22px;
+    }
+    .screen {
+      background: #081321;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 18px;
+      text-align: right;
+      overflow: hidden;
+    }
+    #history {
+      color: #9caec7;
+      min-height: 25px;
+      font-size: 0.9rem;
+    }
+    #display {
+      color: white;
+      font-size: clamp(2rem, 7vw, 3rem);
+      font-weight: bold;
+      min-height: 65px;
+      overflow-wrap: anywhere;
+      line-height: 1.3;
+    }
+    .pad {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .calc-key {
+      width: 100%;
+      height: 65px;
+      margin: 0;
+      padding: 0;
+      background: #293c57;
+      color: white;
+      font-size: 1.45rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    .calc-key:hover { background: #415b7a; }
+    .calc-key:focus-visible {
+      outline: 3px solid #ffffff;
+      outline-offset: 2px;
+    }
+    .calc-key.utility {
+      background: #48607b;
+    }
+    .calc-key.operator {
+      background: #216e94;
+    }
+    .calc-key.equals {
+      background: #69d8ff;
+      color: #071525;
+    }
+    .calc-key.equals:hover { background: #a4e9ff; }
+    .hint { text-align: center; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <span class="logo">☁ Cloud Launchpad</span>
+    <div class="links">
+      <a href="/">Home</a>
+      <a href="/about.html">About</a>
+      <a href="/calculator.html">Calculator</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <h1>Cloud Calculator</h1>
+  <p>A traditional calculator built with JavaScript and hosted on AWS EC2.</p>
+
+  <section class="calculator" aria-label="Interactive calculator">
+    <div class="screen" role="status" aria-live="polite">
+      <div id="history">Ready</div>
+      <div id="display">0</div>
+    </div>
+
+    <div class="pad">
+      <button type="button" class="calc-key utility" data-action="clear">C</button>
+      <button type="button" class="calc-key utility" data-action="backspace">⌫</button>
+      <button type="button" class="calc-key utility" data-action="percent">%</button>
+      <button type="button" class="calc-key operator" data-op="/">÷</button>
+
+      <button type="button" class="calc-key" data-digit="7">7</button>
+      <button type="button" class="calc-key" data-digit="8">8</button>
+      <button type="button" class="calc-key" data-digit="9">9</button>
+      <button type="button" class="calc-key operator" data-op="*">×</button>
+
+      <button type="button" class="calc-key" data-digit="4">4</button>
+      <button type="button" class="calc-key" data-digit="5">5</button>
+      <button type="button" class="calc-key" data-digit="6">6</button>
+      <button type="button" class="calc-key operator" data-op="-">−</button>
+
+      <button type="button" class="calc-key" data-digit="1">1</button>
+      <button type="button" class="calc-key" data-digit="2">2</button>
+      <button type="button" class="calc-key" data-digit="3">3</button>
+      <button type="button" class="calc-key operator" data-op="+">+</button>
+
+      <button type="button" class="calc-key utility" data-action="sign">±</button>
+      <button type="button" class="calc-key" data-digit="0">0</button>
+      <button type="button" class="calc-key" data-action="decimal">.</button>
+      <button type="button" class="calc-key equals" data-action="equals">=</button>
+    </div>
+  </section>
+
+  <p class="hint">You can use the buttons or your keyboard.</p>
+</main>
+
+<footer>Class 8 | Week 1 | AWS Cloud Engineering</footer>
+
+<script>
+"use strict";
+
+let current = "0";
+let stored = null;
+let operation = null;
+let fresh = false;
+
+const display = document.getElementById("display");
+const history = document.getElementById("history");
+
+function update() {
+  display.textContent = current;
+  history.textContent = stored === null
+    ? "Ready"
+    : stored + " " + ({"+":"+","-":"−","*":"×","/":"÷"}[operation]);
+}
+
+function clearAll() {
+  current = "0";
+  stored = null;
+  operation = null;
+  fresh = false;
+  update();
+}
+
+function digit(n) {
+  if (current === "Error") clearAll();
+  if (fresh) {
+    current = n;
+    fresh = false;
+  } else if (current.replace(/[^0-9]/g, "").length < 15) {
+    current = current === "0" ? n : current + n;
+  }
+  update();
+}
+
+function decimal() {
+  if (current === "Error") clearAll();
+  if (fresh) {
+    current = "0.";
+    fresh = false;
+  } else if (!current.includes(".")) {
+    current += ".";
+  }
+  update();
+}
+
+function formatted(number) {
+  return Number.isFinite(number)
+    ? String(Number(number.toPrecision(12)))
+    : "Error";
+}
+
+function equals() {
+  if (stored === null || operation === null || fresh) return;
+
+  const b = Number(current);
+  let answer;
+
+  switch (operation) {
+    case "+": answer = stored + b; break;
+    case "-": answer = stored - b; break;
+    case "*": answer = stored * b; break;
+    case "/": answer = b === 0 ? NaN : stored / b; break;
+  }
+
+  const symbol = {"+": "+", "-": "−", "*": "×", "/": "÷"}[operation];
+  const calculation = `${stored} ${symbol} ${b} =`;
+
+  current = formatted(answer);
+  stored = null;
+  operation = null;
+  fresh = true;
+  update();
+  history.textContent = calculation;
+}
+
+function selectOperation(op) {
+  if (current === "Error") return;
+  if (stored !== null && !fresh) {
+    equals();
+    if (current === "Error") return;
+  }
+  stored = Number(current);
+  operation = op;
+  fresh = true;
+  update();
+}
+
+function action(name) {
+  switch (name) {
+    case "clear":
+      clearAll();
+      break;
+    case "backspace":
+      if (!fresh && current !== "Error") {
+        current = current.length <= 1 || current.length === 2 && current[0] === "-"
+          ? "0" : current.slice(0, -1);
+        update();
+      }
+      break;
+    case "decimal":
+      decimal();
+      break;
+    case "sign":
+      if (current !== "Error" && Number(current) !== 0) {
+        current = current.startsWith("-")
+          ? current.slice(1) : "-" + current;
+        update();
+      }
+      break;
+    case "percent":
+      if (current !== "Error") {
+        current = formatted(Number(current) / 100);
+        update();
+      }
+      break;
+    case "equals":
+      equals();
+      break;
+  }
+}
+
+document.querySelector(".pad").addEventListener("click", function(event) {
+  const button = event.target.closest("button");
+  if (!button) return;
+
+  if (button.dataset.digit !== undefined) {
+    digit(button.dataset.digit);
+  } else if (button.dataset.op) {
+    selectOperation(button.dataset.op);
+  } else {
+    action(button.dataset.action);
+  }
+});
+
+document.addEventListener("keydown", function(event) {
+  if (event.ctrlKey || event.altKey || event.metaKey) return;
+
+  const key = event.key;
+  let handled = true;
+
+  if (/^[0-9]$/.test(key)) digit(key);
+  else if (["+", "-", "*", "/"].includes(key)) selectOperation(key);
+  else if (key === ".") decimal();
+  else if (key === "Enter" || key === "=") equals();
+  else if (key === "Escape") clearAll();
+  else if (key === "Backspace") action("backspace");
+  else if (key === "%") action("percent");
+  else handled = false;
+
+  if (handled) event.preventDefault();
+});
+
+update();
+</script>
+</body>
+</html>
