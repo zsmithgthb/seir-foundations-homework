@@ -1,0 +1,3 @@
+Spotter = Sid Owsley
+Teammates = Sid Owsley, Alex Petitt
+Days + Times when your team meets = SUN 1600-1800 BRT, MON 2000-2200 BRT
