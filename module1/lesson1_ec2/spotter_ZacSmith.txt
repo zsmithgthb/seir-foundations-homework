@@ -1,0 +1,55 @@
+SEIR Foundations Week 3 Spotter Learning Report
+Student: Zac Smith
+Course: SEIR Foundations, Class 8
+Assignment: Module 1, Lesson 1
+
+
+MY SPOTTER: SID OWSLEY
+
+The assignment asks me to document five specific things Sid learned. The statements below are items to check with Sid, not confirmed claims about his personal experiences.
+
+Sid learning point one:
+Connecting to an Amazon EC2 instance from a local computer using Git Bash, an SSH private key, and the correct connection address.
+
+Sid learning point two:
+Understanding the difference between an EC2 launch template and an Amazon Machine Image (AMI), and how each affects launching a new instance.
+
+Sid learning point three:
+Manually installing the Balerica Bank application by cloning the course repository, running the installer, and checking its output.
+
+Sid learning point four:
+Starting the FastAPI application through a Python virtual environment and Uvicorn, and investigating a port 8000 conflict.
+
+Sid learning point five:
+Recording an EC2 instance ID and boot time, capturing proof of successful startup, and cleaning up instances after the lab.
+
+I need to confirm these five points with Sid and replace anything that does not accurately describe what he learned. Sid's account and mine should agree.
+
+
+PERSON I SPOT FOR: ALEX PETIT
+
+I am Alex Petit's spotter. The following are five things I learned during my Week 3 lab work that I can explain to Alex. I still need to confirm which of these we discussed together before treating them as shared learning.
+
+My learning point one:
+I learned how to connect to EC2 instances from Windows Git Bash, troubleshoot SSH key paths, and check an instance ID and boot time using ec2-metadata and uptime.
+
+My learning point two:
+I learned how to clone the instructor's repository, manually install Balerica Bank, activate a Python virtual environment, and launch the FastAPI application with Uvicorn.
+
+My learning point three:
+I learned to check COBOL exit codes with echo $?. I reproduced code 0 for success, 4 for an account not found, 8 for a rejected payment, and 12 for a missing-file or environment problem.
+
+My learning point four:
+I learned how to decode Alice Johnson's fixed-width account record using grep and cut. I posted the $125.50 transaction TXN-ZS-0005, found its journal entry, and checked that the account lookup still showed a $5,000.00 balance.
+
+My learning point five:
+I learned to troubleshoot a process already using port 8000, distinguish commands run locally from those run on EC2, and capture the instance identification and successful Uvicorn startup together for evidence.
+
+I need to confirm with Alex which five subjects we actually discussed and adjust this section if needed. Alex's report should identify Zac Smith as his spotter.
+
+
+FINAL CROSS-CHECK
+
+My spotter is Sid Owsley.
+The person I spot for is Alex Petit.
+Before submission, I will check both students' descriptions so my report reflects our actual discussions.

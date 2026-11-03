@@ -1,0 +1,110 @@
+SEIR FOUNDATIONS - WEEK 3 AI RUNBOOK REVIEW
+
+Student: Zac Smith
+Assignment: Module 1, Lesson 1 - Balerica Legacy Bank AI Runbook Review
+AI used: ChatGPT
+Conversation share link: https://chatgpt.com/share/6ae7d160-83dc-83e8-ae82-c73a9bad9832
+Official runbook: https://github.com/BalericaAI/SEIR-Foundations/blob/main/module1/lesson1_ec2/API/runbook.md
+
+PURPOSE
+
+I used ChatGPT while carrying out seven EC2 installation runs. I compared its suggestions with the instructor's Markdown runbook and with the actual output on my instances. Below are six questions from our work, what I understood from the responses, and how I checked them. The verification steps are the most important part of this review.
+
+QUESTION 1 - DOES MAKING AN AMI AUTOMATICALLY UPDATE A LAUNCH TEMPLATE?
+
+Question: I made an AMI earlier, then launched three instances from a template. Did making that AMI change the template or preinstall the bank?
+
+AI answer in my own words: An AMI and a launch template are different AWS resources. Creating a new AMI does not automatically change the AMI ID stored in an existing version of a launch template. For these graded repetitions I needed new instances with the application installed manually, not a golden image that had the bank preloaded.
+
+How I checked it:
+1. I signed in to each of the three fresh instances through Git Bash SSH.
+2. I checked for /opt/balerica-bank; the application was not there.
+3. I cloned the SEIR Foundations repository and executed its installation script myself on each instance.
+4. I saw "Installation complete." and confirmed the COBOL programs worked before starting Uvicorn.
+5. The missing directory by itself did not prove the entire launch-template configuration, so I treated it as supporting evidence, not conclusive proof of every image setting.
+
+What I learned: I need to inspect how an instance is configured rather than assume creating one AWS resource modifies another.
+
+QUESTION 2 - WHEN SHOULD I FOLLOW THE RUNBOOK LITERALLY INSTEAD OF THE AI'S REPHRASING?
+
+Question: Why was I being told to run cd again when I was already in /opt/balerica-bank? Did the Markdown really call for those extra steps or different payment examples?
+
+AI answer in my own words: The source instructions matter more than an AI's preferred way of explaining a procedure. Repeating cd was redundant. The runbook's example payment used TXN0001, while the separate homework required an initials-prefixed transaction ID for posted evidence.
+
+How I checked it:
+1. I read the actual runbook and compared the original commands line by line with ChatGPT's answer.
+2. I pointed out where ChatGPT split combined command examples, repeated directory changes, and substituted new transaction IDs.
+3. I ran the original runbook payment example during the installation repetitions.
+4. I separately used TXN-ZS-0005 for the homework's initials-prefixed transaction requirement and confirmed it was POSTED in the journal.
+
+Where the AI was wrong, vague, or out of date: ChatGPT repeatedly modified payment examples or added unnecessary commands after I had specifically requested the exact runbook. I had to correct it and ask for the original sequence again.
+
+What I learned: AI is helpful for explanations, but when assignment instructions demand exact commands I must check the primary document.
+
+QUESTION 3 - WHAT MAKES ONE OF THE SEVEN RUN SCREENSHOTS VALID?
+
+Question: Is a screenshot showing "Application startup complete." enough to prove I finished a run?
+
+AI answer in my own words: No. The screenshot must also show the required identification command right before Uvicorn and its output: username, local time zone, instance ID, and boot time. Every counted run must use a different instance; no more than three lab-run screenshots may be from one local date.
+
+How I checked it:
+1. My first screenshots showed Uvicorn working, but the required identification line was missing.
+2. I pressed Ctrl+C to stop Uvicorn, reran the identification line, and started Uvicorn again.
+3. I checked the resulting screenshots for both the instance ID and "Application startup complete." in the same terminal capture.
+4. I compared all seven instance IDs and boot times and organized the screenshots across October 30, October 31, and November 1, 2026.
+5. I saved lab1_run1.jpg through lab1_run7.jpg and recorded the corresponding details in my README.
+
+What I learned: Evidence must demonstrate where and when a successful command actually ran, not just show a success message.
+
+QUESTION 4 - HOW CAN I VERIFY COBOL RETURN CODES?
+
+Question: How do I deliberately trigger return codes 0, 4, 8, and 12?
+
+AI answer in my own words: COBOL applications use exit codes to indicate outcomes. In the Linux shell, echo $? immediately after the program shows that program's exit status. The four homework cases are success, account not found, business rejection, and environment/file access failure.
+
+How I checked it: All these tests were performed on Run 7, instance i-099a4999305700832.
+
+Code 0: I ran ./cobol/bin/account_lookup 100001 followed by echo $?. Alice Johnson's active account was returned, with BALANCE=5000.00; the exit status was 0. Proof: screenshots/cobol_rc0.jpg.
+
+Code 4: I ran ./cobol/bin/account_lookup 999999 followed by echo $?. The output included ERROR=ACCOUNT NOT FOUND and ACCOUNT=999999; the exit status was 4. Proof: screenshots/cobol_rc4.jpg.
+
+Code 8: I ran ./cobol/bin/payment_post TXN-ZS-0004 100001 0.00 USD INV-1004 followed by echo $?. The output included STATUS=REJECTED and REASON=AMOUNT MUST BE GREATER THAN ZERO; the exit status was 8. Proof: screenshots/cobol_rc8.jpg.
+
+Code 12: From /tmp, I ran /opt/balerica-bank/cobol/bin/account_lookup 100001 followed by echo $?. The output included ERROR=CANNOT OPEN data/accounts.dat and FILE-STATUS=35; the exit status was 12. Proof: screenshots/cobol_rc12.jpg.
+
+What I learned: The program's current directory can affect relative file paths, and not every nonzero exit code means the entire installation failed.
+
+QUESTION 5 - HOW DID I CHECK FIXED-WIDTH LEDGER DATA AND A PAYMENT'S EFFECT?
+
+Question: How do I decode Alice's ledger record, then see whether a successful payment changed her balance?
+
+AI answer in my own words: The bank uses fixed character positions to store ledger fields. grep identifies the account record and cut -c selects the relevant positions. The balance uses two implied decimal places. A posted journal record and a changed lookup balance are different things and should be verified separately.
+
+How I checked it:
+1. I ran grep '^100001' data/accounts.dat piped into cut -c1-6, -c7-36, -c37-44, -c45-56, and -c57-59.
+2. I read account 100001, Alice Johnson, ACTIVE, raw balance 000000500000, and USD. I decoded the amount as $5,000.00.
+3. I posted ./cobol/bin/payment_post TXN-ZS-0005 100001 125.50 USD INV-1005 and observed STATUS=POSTED and REASON=APPROVED, with return code 0.
+4. I used cat data/payments.dat and observed this actual journal line:
+   TXN-ZS-0005         100001000000012550USDPOSTED  INV-1005
+5. I ran the account lookup again and saw that Alice's displayed balance was still $5,000.00.
+6. I saved the ledger decoding and COBOL proof screenshots.
+
+What I learned: I should use the application's real output, not assume that a successfully journaled payment changes the displayed balance.
+
+QUESTION 6 - WHY DID UVICORN REPORT "ADDRESS ALREADY IN USE"?
+
+Question: How can I fix [Errno 98] address already in use when starting the bank API?
+
+AI answer in my own words: A process was already listening on the requested address and port 8000. This is a running-process problem, not a reason to reinstall the bank. I needed to stop the existing server process before starting another one on that port.
+
+How I checked it:
+1. I read the actual terminal error containing [Errno 98].
+2. I checked for another Uvicorn process using port 8000 and stopped the earlier running API.
+3. I ran the mandatory EC2 identification line before starting Uvicorn again.
+4. The next start displayed "Application startup complete." and I captured the successful output.
+
+What I learned: Reading the error and checking the existing process is better than repeating the entire installation.
+
+OVERALL ASSESSMENT
+
+ChatGPT helped me understand SSH, EC2, Linux paths, COBOL return codes, ledger records, Git, and Uvicorn. It was less reliable when I needed the instructor's exact Markdown commands: it added redundant commands or altered examples until I corrected it. My strongest checks were comparing responses to the original runbook, running commands on real instances, reading exact output and return codes, and saving screenshots. I learned to treat AI as a study and troubleshooting tool, not as a substitute for verification.

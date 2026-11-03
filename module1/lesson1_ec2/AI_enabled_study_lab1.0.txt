@@ -1,0 +1,184 @@
+SEIR FOUNDATIONS - WEEK 3 AI-ENABLED STUDY
+Module 1, Lesson 1 - EC2 and Balerica Legacy Bank
+Student: Zac Smith
+Date: November 1, 2026
+File: AI_enabled_study_lab1.0.txt
+
+This report is written in plain text. Each topic has a paragraph explaining
+what I learned, followed by three identified sources. The first two sources
+for each topic are published technical readings, and the third is ChatGPT,
+which I used to help explain and connect the ideas to my hands-on lab.
+Any dated statistics are attributed to the organization that published them.
+
+
+TOPIC 1 - DATABASES
+
+I learned that a database is more than a place to save information because the
+way the data is organized affects how safely an application can read and change
+it. A relational database uses tables and relationships, and SQL is commonly
+used to work with those records (Sources D1 and D2, accessed 2026). For a
+banking application, I now understand why transactions and data consistency
+are important: an operation should not leave the financial records only
+partially updated if something fails (Source D1, accessed 2026). AWS explains
+that Amazon RDS is intended for managed relational databases, while DynamoDB
+uses a different, nonrelational data model, so the correct choice depends on
+the workload (Source D2, accessed 2026). In my Balerica Bank lab, I looked up
+Alice Johnson's account from a fixed-width data file, which was not the same
+as working with a full relational database. I also noticed that a payment
+could be marked POSTED in a journal while the account lookup still displayed
+the original balance, showing why related financial records must be checked
+and reconciled. ChatGPT helped me connect the database concepts to those
+actual observations without treating the practice bank as a production system
+(Source D3, 2026).
+
+Three sources for Topic 1:
+D1. Amazon Web Services. "What is a Relational Database?" Reading,
+    accessed November 1, 2026.
+    https://aws.amazon.com/rds/what-is-a-relational-database/
+D2. Amazon Web Services. "Choosing an AWS database service." AWS Decision
+    Guides, reading, accessed November 1, 2026.
+    https://docs.aws.amazon.com/decision-guides/latest/decision-guides/databases-on-aws-how-to-choose.html
+D3. ChatGPT. AI-assisted explanations and discussion for this Week 3 lab,
+    November 1, 2026.
+
+
+TOPIC 2 - COBOL
+
+COBOL stands for Common Business-Oriented Language, and IBM describes it as a
+programming language built for business data processing (Source C1, 2025).
+I can see why it is associated with banking because it supports precise
+decimal-style calculations and record-based processing, where small mistakes
+can have serious consequences (Source C1, 2025). During the Balerica lab, I
+used account_lookup and payment_post rather than just reading about the
+language, which made the concepts easier to understand (Source C2, accessed
+2026). I confirmed the program's exit status with echo $? and demonstrated
+return codes 0, 4, 8, and 12 for this particular exercise; these meanings
+came from the lab's own programs, not from a rule that every COBOL program
+must use those same codes (Source C2, accessed 2026). I also decoded a
+fixed-width account record using grep and cut -c, including the account
+number, name, status, balance in cents, and currency. My biggest lesson was
+that both the program output and the file contents matter, because a payment
+message saying POSTED is not enough by itself to prove that every related
+record has changed. ChatGPT helped me understand the return-code tests and
+why a missing relative data path produced the environment-error example
+(Source C3, 2026).
+
+Three sources for Topic 2:
+C1. IBM. "What is COBOL?" Published May 8, 2025. Reading.
+    https://www.ibm.com/think/topics/cobol
+C2. BalericaAI. "Balerica Legacy Bank Student Runbook," Module 1, Lesson 1.
+    Course reading, accessed November 1, 2026.
+    https://github.com/BalericaAI/SEIR-Foundations/blob/main/module1/lesson1_ec2/API/runbook.md
+C3. ChatGPT. AI-assisted explanations and troubleshooting for my seven EC2
+    runs and COBOL tests, 2026.
+
+
+TOPIC 3 - SWIFT AND ISO 20022
+
+I learned that Swift and ISO 20022 are related to financial messaging but are
+not interchangeable names for the same thing. Swift operates financial
+messaging services and standards programs, while ISO 20022 is a structured
+message standard that helps financial institutions describe payment details
+more consistently (Sources S1 and S2, 2025-2026). Swift reported that the
+coexistence period for traditional MT and ISO 20022 cross-border payment
+instructions ended on November 22, 2025; this was a milestone for payment
+instructions, not a claim that every older financial message type disappeared
+on that day (Source S2, 2025). In March 2026, Swift reported a 97 percent
+adoption rate after the major migration weekend, while also explaining that
+additional work remained on the broader roadmap (Source S1, 2026). I think
+richer structured fields can make payment data easier to validate, reconcile,
+and use for compliance checks, but a standard message still has to be handled
+correctly by the receiving systems. The Balerica Bank exercise helped me
+visualize the connection because an internal account record and a payment
+journal are different from a message exchanged between banks. ChatGPT helped
+me separate an actual account balance, an internal posted transaction, and a
+network payment message instead of assuming that they all represent the same
+action (Source S3, 2026).
+
+Three sources for Topic 3:
+S1. Swift. "ISO 20022 in bytes for payments: The journey continues."
+    March 1, 2026. Reading.
+    https://www.swift.com/insights/newsletters/iso-20022-bytes-payments-journey-continues
+S2. Swift. "Global financial community completes switch to ISO 20022."
+    November 25, 2025. Official announcement and reading.
+    https://www.swift.com/news-events/press-releases/global-financial-community-completes-switch-iso-20022-paving-way-new-levels-cross-border-payment-speed-and-innovation-around-world
+S3. ChatGPT. AI-assisted explanation relating bank records to financial
+    messaging standards, November 1, 2026.
+
+
+TOPIC 4 - APPLICATION PROGRAMMING INTERFACES (APIs)
+
+An API is a defined way for one application to request information or an
+action from another application without directly handling all of its internal
+code. I learned that HTTP APIs commonly use methods such as GET for reading
+and POST for sending data or requesting an operation (Source A1, accessed
+2026). FastAPI makes it possible to define Python endpoints that return
+structured responses, and its documentation describes automatic interactive
+API documentation (Source A1, accessed 2026). In my EC2 lab, I activated the
+Python environment and started the Balerica application's FastAPI service
+with Uvicorn on port 8000, then checked for the successful application startup
+message. AWS API Gateway provides another piece of this picture by allowing
+teams to publish, protect, monitor, and connect APIs to back-end services
+(Source A2, accessed 2026). I also learned that an API needs careful security
+and input validation because giving an application a modern web interface
+does not automatically make the underlying banking operation correct or safe.
+ChatGPT helped me understand the difference between an API application,
+the Uvicorn server running it, and the EC2 instance hosting that server
+(Source A3, 2026).
+
+Three sources for Topic 4:
+A1. FastAPI. "First Steps." Official tutorial and reading,
+    accessed November 1, 2026.
+    https://fastapi.tiangolo.com/tutorial/first-steps/
+A2. Amazon Web Services. "API Gateway REST APIs." Developer Guide,
+    accessed November 1, 2026.
+    https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-rest-api.html
+A3. ChatGPT. AI-assisted explanation of EC2, Uvicorn, and FastAPI for the
+    Balerica Bank lab, 2026.
+
+
+TOPIC 5 - HOW LEGACY SYSTEMS, DATABASES, COBOL, SWIFT, AND APIs CONNECT
+
+The biggest connection I made this week is that a financial application can
+contain old business logic, stored account records, a modern API, and external
+payment-message standards at the same time. IBM explains that z/OS Connect
+can expose existing mainframe resources through REST APIs and translate
+between JSON requests and native formats used by COBOL applications (Source
+L1, accessed 2026). This means an organization may be able to give newer
+applications a controlled interface to established business functions without
+replacing every part of the legacy environment immediately. AWS describes
+replatforming and refactoring as different modernization approaches, which
+helped me understand that moving or changing a mainframe application requires
+planning, integration, testing, and careful decisions (Source L2, accessed
+2026). In my practice bank, the fixed-width account file, COBOL payment
+program, and FastAPI server illustrated separate pieces of that architecture,
+although the classroom application is only a simplified example. I learned
+that the internal journal, displayed account balance, and any outgoing
+payment message must be reconciled rather than assumed to agree automatically.
+I also understand why security, error handling, and audit records matter at
+every handoff between systems, especially when financial data is involved.
+ChatGPT helped me connect the individual lab commands to a bigger picture of
+legacy modernization while the IBM and AWS documentation supplied checks on
+those explanations (Source L3, 2026).
+
+Three sources for Topic 5:
+L1. IBM. "What are IBM z/OS Connect API providers?" Official documentation,
+    accessed November 1, 2026.
+    https://www.ibm.com/docs/en/zos-connect/3.0.0?topic=connect-what-are-zos-api-providers
+L2. Amazon Web Services. "Modernization approach." AWS Mainframe
+    Modernization User Guide, accessed November 1, 2026.
+    https://docs.aws.amazon.com/m2/latest/userguide/modernization-m2.html
+L3. ChatGPT. AI-assisted synthesis of legacy COBOL, account storage, APIs,
+    and financial-message concepts for this Week 3 lab, 2026.
+
+
+FINAL REFLECTION
+
+This study helped me understand why we installed and tested a legacy banking
+application on a modern cloud server instead of studying EC2 commands alone.
+The account file, COBOL programs, payment journal, and API each have a different
+purpose, and a real financial system must keep them working together safely.
+I used ChatGPT to help explain unfamiliar concepts, but I checked the main
+technical claims against named AWS, IBM, Swift, FastAPI, and course sources.
+The hands-on lab also taught me not to assume that a successful command means
+all of the related financial records have been updated.
